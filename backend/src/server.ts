@@ -1,32 +1,30 @@
-import express, { Request, Response } from "express";
+import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import mongoose from "mongoose";
+import authRoutes from "./routes/authRoutes";
+import budgetRoutes from "./routes/budgetRoutes";
+import compareRoutes from "./routes/compareRoutes";
+import expensesRoutes from "./routes/expensesRoutes";
+import savingRoutes from "./routes/savingRoutes";
 
 dotenv.config();
-
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
+
+// Database Connection
+mongoose.connect(process.env.MONGO_URI as string)
+  .then(() => console.log("MongoDB Connected"))
+  .catch((err) => console.error("MongoDB Connection Error:", err));
 
 app.use(cors());
 app.use(express.json());
 
-// Define a transaction type
-interface Transaction {
-  id: string;
-  amount: number;
-  merchant: string;
-  category: string;
-  date: string;
-}
+// Register Routes
+app.use("/api/auth", authRoutes);
+app.use("/api", budgetRoutes);
+app.use("/api", compareRoutes);
+app.use("/api", expensesRoutes);
+app.use("/api", savingRoutes);
 
-// Mock transaction API endpoint
-app.get("/api/transactions", (req: Request, res: Response) => {
-  const transactions: Transaction[] = [
-    { id: "txn_1", amount: 50, merchant: "Uber", category: "Transport", date: "2025-02-08" },
-    { id: "txn_2", amount: 200, merchant: "Amazon", category: "Shopping", date: "2025-02-07" }
-  ];
-  
-  res.json(transactions);
-});
-
-app.listen(PORT, () => console.log(`Backend running on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Backend running on port ${PORT}`));
