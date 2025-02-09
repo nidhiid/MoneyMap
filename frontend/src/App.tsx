@@ -1,13 +1,32 @@
-// import React from "react";
+import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import TransactionsTable from "./components/TransactionsTable.tsx";
+import { useTransactions } from "./hooks/useTransactions"; // ✅ Correct import
 
 const queryClient = new QueryClient();
 
-export default function App() {
+const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <TransactionsTable />
+      <TransactionsLogger />
     </QueryClientProvider>
   );
-}
+};
+
+const TransactionsLogger = () => {
+  const { transactions, loading, error } = useTransactions(); // ✅ Call the hook properly
+
+  if (loading) {
+    console.log("Loading transactions...");
+    return null;
+  }
+
+  if (error) {
+    console.error("Error fetching transactions:", error);
+    return null;
+  }
+
+  console.log("Fetched transactions:", transactions);
+  return null; // No UI, just logging
+};
+
+export default App;
